@@ -141,6 +141,7 @@ dependencies {
     // Firebase UI
     implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
 
+    // Overcome single dex file limits
     implementation("androidx.multidex:multidex:$multidex_version")
 //    implementation("com.android.support:multidex:1.0.3")
 }
