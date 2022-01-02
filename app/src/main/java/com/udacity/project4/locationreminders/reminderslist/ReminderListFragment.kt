@@ -1,16 +1,19 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.activity.addCallback
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
-import com.udacity.project4.R.id.button_sign_in
 import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -21,6 +24,11 @@ import com.udacity.project4.utils.setup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReminderListFragment : BaseFragment() {
+
+    companion object {
+        const val TAG = "ReminderListFragment"
+        const val SIGN_IN_RESULT_CODE = 1001
+    }
 
     //use Koin to retrieve the ViewModel instance
     override val _viewModel: ReminderListViewModel by viewModel()
@@ -61,12 +69,53 @@ class ReminderListFragment : BaseFragment() {
         binding.addReminderFAB.setOnClickListener {
             navigateToAddReminder()
         }
+
+        // If the user presses the back button, bring them back to sign in screen
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            executeSignOutProcess()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         //load the reminders list on the ui
         _viewModel.loadReminders()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == SIGN_IN_RESULT_CODE) {
+            val response = IdpResponse.fromResultIntent(data)
+            if (resultCode == Activity.RESULT_OK) {
+                // Successfully signed in user.
+                Log.i(
+                    TAG,
+                    "Successfully signed in user " +
+                            "${FirebaseAuth.getInstance().currentUser?.displayName}!"
+                )
+            } else {
+                // Sign in failed. If response is null the user canceled the sign-in flow using
+                // the back button. Otherwise check response.getError().getErrorCode() and handle
+                // the error.
+                Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logout -> {
+                executeSignOutProcess()
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        // display logout as menu item
+        inflater.inflate(R.menu.main_menu, menu)
     }
 
     private fun navigateToAddReminder() {
@@ -84,25 +133,6 @@ class ReminderListFragment : BaseFragment() {
 
         // setup the recycler view using the extension function
         binding.remindersRecyclerView.setup(adapter)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.logout -> {
-                AuthUI.getInstance().signOut(requireContext())
-                updateUI()
-
-                //TODO: Remove from backstack
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        // display logout as menu item
-        inflater.inflate(R.menu.main_menu, menu)
     }
 
     private fun updateUI() {
@@ -150,5 +180,10 @@ class ReminderListFragment : BaseFragment() {
                 .build(),
             AuthenticationActivity.SIGN_IN_RESULT_CODE
         )
+    }
+
+    private fun executeSignOutProcess() {
+        AuthUI.getInstance().signOut(requireContext())
+        updateUI()
     }
 }
