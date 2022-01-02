@@ -18,5 +18,4 @@ class AuthenticationViewModel : ViewModel() {
             AuthenticationState.UNAUTHENTICATED
         }
     }
-
 }

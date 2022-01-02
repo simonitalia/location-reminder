@@ -12,11 +12,17 @@
         <action
             android:id="@+id/to_save_reminder"
             app:destination="@id/saveReminderFragment" />
+
+        <action
+            android:id="@+id/action_reminderListFragment_to_authenticationActivity"
+            app:destination="@id/authenticationActivity" />
+
     </fragment>
     <activity
-        android:id="@+id/mainActivity"
+        android:id="@+id/remindersActivity"
         android:name="com.udacity.project4.locationreminders.RemindersActivity"
-        android:label="MainActivity" />
+        android:label="RemindersActivity"
+        tools:layout="@layout/activity_reminders" />
     <fragment
         android:id="@+id/saveReminderFragment"
         android:name="com.udacity.project4.locationreminders.savereminder.SaveReminderFragment"
