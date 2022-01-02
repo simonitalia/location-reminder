@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_authentication.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_reminders.xml" value="0.11639492753623189" />
-        <entry key="app/src/main/res/layout/firebaseui_authentication.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/firebaseui_authentication.xml" value="0.165" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.16394927536231885" />
         <entry key="app/src/main/res/layout/fragment_reminders.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_save_reminder.xml" value="0.21557971014492755" />
