@@ -6,9 +6,11 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
+import com.udacity.project4.R.id.button_sign_in
 import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -91,7 +93,6 @@ class ReminderListFragment : BaseFragment() {
                 updateUI()
 
                 //TODO: Remove from backstack
-
             }
         }
 
@@ -134,9 +135,17 @@ class ReminderListFragment : BaseFragment() {
             // provide more ways for users to register and sign in here
         )
 
+        // Custom login layout
+        val customLayout = AuthMethodPickerLayout
+            .Builder(R.layout.firebaseui_authentication)
+            .setGoogleButtonId(R.id.sign_in_with_google_button)
+            .setEmailButtonId(R.id.sign_in_with_email_button)
+            .build()
+
         startActivityForResult(
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
+                .setAuthMethodPickerLayout(customLayout)
                 .setAvailableProviders(providers)
                 .build(),
             AuthenticationActivity.SIGN_IN_RESULT_CODE
