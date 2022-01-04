@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -29,6 +30,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
@@ -40,7 +42,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     // Google map properties
     private lateinit var map: GoogleMap
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var lastKnownLocation: Location? = null
     private val REQUEST_LOCATION_PERMISSION = 1 // location tracking permission
+    private val DEFAULT_ZOOM_LEVEL = 18f // zoom level for map
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -54,12 +59,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used
+        // must declare this inside onCreateView()
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment? // adds Google Map to the app
         mapFragment?.getMapAsync(this)
 
-//        TODO: put a marker to location that the user selected
-
+        // configure current location service
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
 //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
@@ -76,15 +82,18 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // map styling
         setMapStyle(map)
 
-//      TODO: REMOVE TEST CODE
-//      TODO: zoom to the user location after taking his permission
+        setMapMarkerOnLongClick(map)
+
+        // set zoom and camera position to user's current location
+
+        // Test Location (Google HQ)
         val lat = 37.422160
         val lon = -122.084270
         val place = LatLng(lat, lon)
-        val zoomLevel = 18f // enough zoom to show overlay
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, DEFAULT_ZOOM_LEVEL))
 
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, zoomLevel))
-
+        // set map to user's current location
+        moveCameraToDeviceLocation(map)
     }
 
     // requesting location permission callback
@@ -137,7 +146,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun enableMyLocation() {
-        if (isPermissionGranted()) map.setMyLocationEnabled(true) else {
+        if (isPermissionGranted()) {
+            map.setMyLocationEnabled(true)
+
+        } else {
 
             // ask for permission
             ActivityCompat.requestPermissions(
@@ -171,9 +183,80 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    // add marker on user long click
+    private fun setMapMarkerOnLongClick(map: GoogleMap) {
+
+        //latLng captured / set on map long press
+        map.setOnMapLongClickListener { latLng ->
+
+            // Add Snippet text displayed below the title
+            val snippet = String.format(
+                Locale.getDefault(),
+                "Lat: %1$.5f, Long: %2$.5f",
+                latLng.latitude,
+                latLng.longitude
+            )
+
+            map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.dropped_pin))
+                    .snippet(snippet)
+
+                    // marker style
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            )
+        }
+    }
+
+    // On click of map point of Interest (POI), add a marker
+    private fun setPoiClick(map: GoogleMap) {
+        map.setOnPoiClickListener { poi ->
+            val poiMarker = map.addMarker(
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
+            )
+
+            // include marker window (call out shown above marker)
+            poiMarker.showInfoWindow()
+        }
+    }
+
+    /*
+        * Get the best and most recent location of the device, which may be null in rare
+        * cases when a location is not available.
+     */
+    private fun moveCameraToDeviceLocation(map: GoogleMap) {
+
+        try {
+            val locationResult = fusedLocationProviderClient.lastLocation
+            locationResult.addOnCompleteListener(context as Activity) { task ->
+                if (task.isSuccessful) {
+                    // Set the map's camera position to the current location of the device.
+                    lastKnownLocation = task.result
+                    if (lastKnownLocation != null) {
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            LatLng(lastKnownLocation!!.latitude,
+                                lastKnownLocation!!.longitude), DEFAULT_ZOOM_LEVEL))
+                    }
+                } else {
+                    Log.i(TAG, "Current location is null. Using defaults.")
+                    Log.i(TAG, "Exception: ${task.exception}")
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(35.6892, 51.3890), 15.toFloat()))
+                    map.uiSettings?.isMyLocationButtonEnabled = false
+                }
+            }
+        } catch (e: SecurityException) {
+            Log.i(TAG, "Exception: ${e.message}")
+        }
+    }
+
     private fun onLocationSelected() {
 //        TODO: When the user confirms on the selected location,
 //         send back the selected location details to the view model
 //         and navigate back to the previous fragment to save the reminder and add the geofence
     }
+
+
 }
