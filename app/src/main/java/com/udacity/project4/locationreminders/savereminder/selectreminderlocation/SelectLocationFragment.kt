@@ -27,12 +27,18 @@ import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
+
+    companion object {
+        const val REQUEST_LOCATION_PERMISSION = 1 // location tracking permission
+        const val DEFAULT_ZOOM_LEVEL = 18f // zoom level for map
+    }
 
     private val TAG = SelectLocationFragment::class.java.simpleName
 
@@ -44,8 +50,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null
-    private val REQUEST_LOCATION_PERMISSION = 1 // location tracking permission
-    private val DEFAULT_ZOOM_LEVEL = 18f // zoom level for map
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -66,9 +70,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // configure current location service
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
-//        TODO: call this function after the user confirms on the selected location
-        onLocationSelected()
 
         return binding.root
     }
@@ -190,12 +191,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map.setOnMapLongClickListener { latLng ->
 
             // Add Snippet text displayed below the title
-            val snippet = String.format(
-                Locale.getDefault(),
-                "Lat: %1$.5f, Long: %2$.5f",
-                latLng.latitude,
-                latLng.longitude
-            )
+            val snippet = _viewModel.setLocationAsString(latLng)
 
             map.addMarker(
                 MarkerOptions()
@@ -206,6 +202,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     // marker style
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             )
+
+            // update view model and trigger navigation
+            onLocationSelected(latLng, snippet)
         }
     }
 
@@ -252,11 +251,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    private fun onLocationSelected() {
-//        TODO: When the user confirms on the selected location,
-//         send back the selected location details to the view model
-//         and navigate back to the previous fragment to save the reminder and add the geofence
-    }
+    private fun onLocationSelected(latLng: LatLng, locationString: String) {
 
+        // update viewModel properties
+        _viewModel.reminderSelectedLocationStr.value =  locationString
+        _viewModel.latitude.value = latLng.latitude
+        _viewModel.longitude.value = latLng.latitude
+
+//         TODO: add the geofence
+        _viewModel.navigateBack()
+    }
 
 }
