@@ -27,7 +27,7 @@ class ReminderListFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ReminderListFragment"
-        const val SIGN_IN_RESULT_CODE = 1001
+        const val SIGN_IN_RESULT_CODE = 1001 // Sign in response result code
     }
 
     //use Koin to retrieve the ViewModel instance
@@ -53,7 +53,8 @@ class ReminderListFragment : BaseFragment() {
 
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
 
-        updateUI()
+        //trigger UI update on Auth state change
+        onAuthenticationStateChanged()
 
         return binding.root
     }
@@ -72,7 +73,20 @@ class ReminderListFragment : BaseFragment() {
 
         // If the user presses the back button, bring them back to sign in screen
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            executeSignOutProcess()
+            signUserOut()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (requestCode == SIGN_IN_RESULT_CODE) {
+            val response = IdpResponse.fromResultIntent(data)
+
+            if (resultCode != Activity.RESULT_OK) {
+                // Sign in failed.
+                // check response.getError().getErrorCode()
+                Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
+            }
         }
     }
 
@@ -82,30 +96,10 @@ class ReminderListFragment : BaseFragment() {
         _viewModel.loadReminders()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SIGN_IN_RESULT_CODE) {
-            val response = IdpResponse.fromResultIntent(data)
-            if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in user.
-                Log.i(
-                    TAG,
-                    "Successfully signed in user " +
-                            "${FirebaseAuth.getInstance().currentUser?.displayName}!"
-                )
-            } else {
-                // Sign in failed. If response is null the user canceled the sign-in flow using
-                // the back button. Otherwise check response.getError().getErrorCode() and handle
-                // the error.
-                Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
-            }
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-                executeSignOutProcess()
+                signUserOut()
             }
         }
 
@@ -116,6 +110,23 @@ class ReminderListFragment : BaseFragment() {
         super.onCreateOptionsMenu(menu, inflater)
         // display logout as menu item
         inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    private fun onAuthenticationStateChanged() {
+        _viewModel.authenticationState.observe(viewLifecycleOwner,  { authenticationState ->
+            when (authenticationState) {
+
+                // user authenticated
+                ReminderListViewModel.AuthenticationState.AUTHENTICATED ->
+                    Log.i(TAG,"User '${FirebaseAuth.getInstance().currentUser?.displayName}' signed in!")
+
+                // not authenticated, launch sign in flow
+                else -> {
+                    Log.i(TAG, "User is signed out!")
+                    launchSignInFlow()
+                }
+            }
+        })
     }
 
     private fun navigateToAddReminder() {
@@ -133,28 +144,6 @@ class ReminderListFragment : BaseFragment() {
 
         // setup the recycler view using the extension function
         binding.remindersRecyclerView.setup(adapter)
-    }
-
-    private fun updateUI() {
-
-        // get user auth state
-        _viewModel.authenticationState.observe( this,  { authenticationState ->
-            Log.i(AuthenticationActivity.TAG,"User authentication state: $authenticationState")
-
-            when (authenticationState) {
-
-                // user authenticated
-                ReminderListViewModel.AuthenticationState.AUTHENTICATED -> {
-                    Log.i(AuthenticationActivity.TAG,"User ${FirebaseAuth.getInstance().currentUser?.displayName} already signed in!")
-                }
-
-                // not authenticated, launch sign in flow
-                else -> {
-                    Log.i(AuthenticationActivity.TAG, "User is signed out")
-                    launchSignInFlow()
-                }
-            }
-        })
     }
 
     // show log-in flow
@@ -182,8 +171,7 @@ class ReminderListFragment : BaseFragment() {
         )
     }
 
-    private fun executeSignOutProcess() {
+    private fun signUserOut() {
         AuthUI.getInstance().signOut(requireContext())
-        updateUI()
     }
 }
