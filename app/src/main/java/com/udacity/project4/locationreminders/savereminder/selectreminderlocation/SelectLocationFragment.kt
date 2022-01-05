@@ -83,7 +83,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // map styling
         setMapStyle(map)
 
+        // save selected location or POI
         setMapMarkerOnLongClick(map)
+        setPoiClick(map)
 
         // set zoom and camera position to user's current location
 
@@ -204,7 +206,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
 
             // update view model and trigger navigation
-            onLocationSelected(latLng, snippet)
+            onLocationSelected(latLng, snippet, null)
         }
     }
 
@@ -219,6 +221,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             // include marker window (call out shown above marker)
             poiMarker.showInfoWindow()
+
+            // update view model and trigger navigation
+            val descr = _viewModel.setLocationAsString(poi.latLng)
+            onLocationSelected(poi.latLng, descr, poi)
         }
     }
 
@@ -251,15 +257,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    private fun onLocationSelected(latLng: LatLng, locationString: String) {
+    private fun onLocationSelected(latLng: LatLng, locationString: String, selectedPOI: PointOfInterest?) {
 
         // update viewModel properties
         _viewModel.reminderSelectedLocationStr.value =  locationString
         _viewModel.latitude.value = latLng.latitude
         _viewModel.longitude.value = latLng.latitude
+        _viewModel.selectedPOI.value = selectedPOI
 
-//         TODO: add the geofence
+        // navigate to reminder list
         _viewModel.navigateBack()
     }
-
 }

@@ -14,8 +14,10 @@ import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import kotlinx.coroutines.launch
 import java.util.*
 
-class SaveReminderViewModel(val app: Application, private val dataSource: ReminderDataSource): BaseViewModel(app) {
-
+class SaveReminderViewModel(
+    val app: Application,
+    private val dataSource: ReminderDataSource
+): BaseViewModel(app) {
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
     val reminderSelectedLocationStr = MutableLiveData<String>()
