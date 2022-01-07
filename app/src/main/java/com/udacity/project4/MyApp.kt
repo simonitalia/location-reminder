@@ -4,6 +4,7 @@ import android.app.Application
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.locationreminders.geofence.ReminderGeofenceRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import org.koin.android.ext.koin.androidContext
@@ -13,8 +14,13 @@ import org.koin.dsl.module
 
 class MyApp : Application() {
 
+    private lateinit var ReminderGeofenceRepo: ReminderGeofenceRepository
+
     override fun onCreate() {
         super.onCreate()
+
+        // fetch geofence reminder repo
+        ReminderGeofenceRepo = ReminderGeofenceRepository(this)
 
         /**
          * use Koin Library as a service locator
@@ -44,4 +50,6 @@ class MyApp : Application() {
             modules(listOf(myModule))
         }
     }
+
+    fun getReminderGeofenceRepo() = ReminderGeofenceRepo
 }
