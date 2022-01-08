@@ -4,12 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_authentication.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_reminder_description.xml" value="0.22291666666666668" />
         <entry key="app/src/main/res/layout/activity_reminders.xml" value="0.11639492753623189" />
         <entry key="app/src/main/res/layout/firebaseui_authentication.xml" value="0.165" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.16394927536231885" />
         <entry key="app/src/main/res/layout/fragment_reminders.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_save_reminder.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/fragment_select_location.xml" value="0.14" />
+        <entry key="app/src/main/res/layout/fragment_save_reminder.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_select_location.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.22239583333333332" />
       </map>
     </option>

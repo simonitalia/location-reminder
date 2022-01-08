@@ -3,7 +3,6 @@ package com.udacity.project4.locationreminders.savereminder
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
@@ -27,8 +26,6 @@ class SaveReminderViewModel(
     val latitude = MutableLiveData<Double>()
     val longitude = MutableLiveData<Double>()
 
-    val geofenceList = ArrayList<Geofence>()
-
     /**
      * Clear the live data objects to start fresh next time the view model gets called
      */
@@ -39,7 +36,6 @@ class SaveReminderViewModel(
         selectedPOI.value = null
         latitude.value = null
         longitude.value = null
-        geofenceList.clear()
     }
 
     /**
