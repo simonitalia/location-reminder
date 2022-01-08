@@ -212,7 +212,7 @@ class SaveReminderFragment : BaseFragment() {
             else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
         }
 
-        Log.d(TAG, "Request foreground only location permission")
+        Log.d(TAG, "Requesting foreground only location permission")
         ActivityCompat.requestPermissions(
             requireActivity(),
             permissionsArray,
@@ -296,10 +296,12 @@ class SaveReminderFragment : BaseFragment() {
         reminderGeofence.addGeofence(
             reminder,
             success = {
-                Toast.makeText(requireContext(), "Geofences added", Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "Geofence added")
+//                Toast.makeText(requireContext(), "Geofences added", Toast.LENGTH_SHORT).show()
             },
-            failure = { errorString ->
-                Toast.makeText(requireContext(), errorString, Toast.LENGTH_SHORT).show()
+            failure = { errorMessage ->
+                Log.i(TAG, "Geofence error: $errorMessage")
+//                Toast.makeText(requireContext(), errorString, Toast.LENGTH_SHORT).show()
             }
         )
     }
@@ -309,11 +311,13 @@ class SaveReminderFragment : BaseFragment() {
         reminderGeofence.removeGeofence(
             reminder,
             success = {
-                Toast.makeText(requireContext(), "Geofences removed", Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "Geofences removed")
+//                Toast.makeText(requireContext(), "Geofences removed", Toast.LENGTH_SHORT).show()
 
             },
             failure = { errorMessage ->
-                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "Geofence error: $errorMessage")
+//                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
             }
         )
     }

@@ -50,6 +50,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
         if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             this.sendNotification(geofencingEvent.triggeringGeofences)
+            Log.i(TAG, "Triggering notification")
 
         } else {
             Log.i(TAG, "No geofenceTransition Event found!")

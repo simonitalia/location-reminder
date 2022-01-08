@@ -2,17 +2,28 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
-import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Color
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.*
+import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -24,6 +35,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.io.IOException
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
@@ -31,10 +43,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         private val TAG = SelectLocationFragment::class.java.simpleName
 
         // map
-        private const val DEFAULT_ZOOM_LEVEL = 18f // zoom level for map
+        private const val DEFAULT_ZOOM_LEVEL = 12f // zoom level for map
+        private const val PLACE_PICKER_REQUEST_CODE = 3
 
         // background & foreground location tracking permissions
-        private const val REQUEST_LOCATION_PERMISSION = 1 // location tracking permission
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1 // location tracking permission
+        private const val PERMISSION_CODE = 101
     }
 
     // Use Koin to get the view model of the SaveReminder
@@ -45,6 +59,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null
+
+    // selectedLocation
+    private var reminderSelectedLocationStr: String? = null
+    private var latitude: Double? = null
+    private var  longitude: Double? = null
+    private var selectedPOI: PointOfInterest? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -63,6 +83,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment? // adds Google Map to the app
         mapFragment?.getMapAsync(this)
 
+        // on click listener for location search fab
+        binding.locationSearchFloatingActionButton.setOnClickListener {
+            loadPlacePicker()
+        }
+
+        // enable map location search
+        searchLocation(binding.mapLocationSearchView)
+
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
@@ -79,19 +107,21 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setMapMarkerOnLongClick(map)
         setPoiClick(map)
 
-        // set zoom and camera position to user's current location
-
-        // Test Location (Google HQ)
-        val lat = 37.422160
-        val lon = -122.084270
-        val place = LatLng(lat, lon)
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, DEFAULT_ZOOM_LEVEL))
-
-        // set map to user's current location
-        moveCameraToDeviceLocation(map)
-
         // enable location tracking
         enableMyLocation()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (requestCode == PLACE_PICKER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                val place = PlacePicker.getPlace(requireContext(), data)
+                var addressText = place.name.toString()
+                addressText += "\n" + place.address.toString()
+
+                placeMarkerOnMap(place.latLng)
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -102,7 +132,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Check if location permissions are granted and if so enable the
         // location data layer.
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.size > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 enableMyLocation()
             }
@@ -177,6 +207,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             // update view model and trigger navigation
             onLocationSelected(latLng, snippet, null)
+//            confirmLocationSelected(latLng, snippet, null)
         }
     }
 
@@ -195,6 +226,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             // update view model and trigger navigation
             val descr = _viewModel.setLocationAsString(poi.latLng)
             onLocationSelected(poi.latLng, descr, poi)
+//            confirmLocationSelected(poi.latLng, descr, poi)
         }
     }
 
@@ -206,19 +238,19 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         try {
             val locationResult = fusedLocationProviderClient.lastLocation
-            locationResult.addOnCompleteListener(context as Activity) { task ->
+            locationResult.addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     // Set the map's camera position to the current location of the device.
                     lastKnownLocation = task.result
                     if (lastKnownLocation != null) {
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                             LatLng(lastKnownLocation!!.latitude,
                                 lastKnownLocation!!.longitude), DEFAULT_ZOOM_LEVEL))
                     }
                 } else {
                     Log.i(TAG, "Current location is null. Using defaults.")
                     Log.i(TAG, "Exception: ${task.exception}")
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(35.6892, 51.3890), 15.toFloat()))
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(35.6892, 51.3890), 15.toFloat()))
                     map.uiSettings?.isMyLocationButtonEnabled = false
                 }
             }
@@ -250,15 +282,143 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             map.isMyLocationEnabled = true
 
+            // move to current location
+            // set zoom and camera position to user's current location
+
+            // Test Location (Google HQ)
+            val lat = 37.422160
+            val lon = -122.084270
+            val place = LatLng(lat, lon)
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, DEFAULT_ZOOM_LEVEL))
+
+            // move map to user's current location
+            moveCameraToDeviceLocation(map)
+
         } else {
 
             // ask for permission
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION
+                LOCATION_PERMISSION_REQUEST_CODE
             )
         }
+    }
+
+    // map location search
+    private fun loadPlacePicker() {
+        val builder = PlacePicker.IntentBuilder()
+
+        try {
+            startActivityForResult(builder.build(requireActivity()), PLACE_PICKER_REQUEST_CODE)
+
+        } catch (e: GooglePlayServicesRepairableException) {
+            e.printStackTrace()
+
+        } catch (e: GooglePlayServicesNotAvailableException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun placeMarkerOnMap(location: LatLng) {
+        val markerOptions = MarkerOptions().position(location)
+
+        val titleStr = getAddress(location)  // add these two lines
+        markerOptions.title(titleStr)
+
+        map.addMarker(markerOptions)
+    }
+
+    // resolve search location address
+    private fun getAddress(latLng: LatLng): String {
+        // 1
+        val geocoder = Geocoder(requireContext())
+        val addresses: List<Address>?
+        val address: Address?
+        var addressText = ""
+
+        try {
+            // 2
+            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            // 3
+            if (null != addresses && !addresses.isEmpty()) {
+                address = addresses[0]
+                for (i in 0 until address.maxAddressLineIndex) {
+                    addressText += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(i)
+                }
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, e.localizedMessage)
+        }
+
+        return addressText
+    }
+
+    // support search by location on map
+    private fun searchLocation(view: SearchView) {
+
+        view.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+
+            // on kb search icon tapped
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                query?.let { searchViewQueryText ->
+                    var addressList: List<Address>? = null
+                    val geoCoder = Geocoder(requireContext())
+
+                    try {
+                        addressList = geoCoder.getFromLocationName(searchViewQueryText, 1)
+
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+
+                    addressList?.firstOrNull()?.let { address ->
+                        val latLng = LatLng(address.latitude, address.longitude)
+                        map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+
+                    //on no address found
+                    }.run {
+                        Toast.makeText(requireContext(), "no location found", Toast.LENGTH_SHORT).show()
+                    }
+
+                //on empty search text
+                }.run {
+                    Toast.makeText(requireContext(), "provide location", Toast.LENGTH_SHORT).show()
+                }
+
+                return false
+            }
+
+            // on search text input changed
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // TODO: Not implemented
+                return false
+            }
+        })
+    }
+
+    // selected location confirmation alert
+    private fun confirmLocationSelected(latLng: LatLng, locationString: String, selectedPOI: PointOfInterest?) {
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        alertDialog.setTitle("Confirm Location")
+        alertDialog.setMessage("Save this location:\n $locationString?")
+        alertDialog.setPositiveButton("Yes") { dialog, id ->
+            val intent  = Intent()
+            startActivity(intent)
+
+            //set location de
+            onLocationSelected(latLng, locationString, selectedPOI)
+        }
+        alertDialog.setNegativeButton("Cancel") { dialog, id ->
+            dialog.cancel()
+        }
+
+        val alert = alertDialog.create()
+        alert.setCanceledOnTouchOutside(false)
+        alert.show()
+        val negativeButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
+        negativeButton.setTextColor(Color.RED)
     }
 
     // update viewModel and navigation

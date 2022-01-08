@@ -131,9 +131,10 @@ dependencies {
     //Koin
     androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
 
-    //Maps & Geofencing
+    //Maps, Places & Geofencing
     implementation "com.google.android.gms:play-services-location:$playServicesVersion"
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.android.gms:play-services-places:17.0.0'
 
     // Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:28.4.0')

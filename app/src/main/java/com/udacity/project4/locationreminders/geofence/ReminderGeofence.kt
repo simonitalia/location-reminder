@@ -30,31 +30,37 @@ class ReminderGeofence(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
+    // create geofence for reminder location
     fun addGeofence(
         reminder: ReminderDataItem,
         success: () -> Unit,
         failure: (error: String) -> Unit
     ) {
-        // 1
+        // 1 build geofence
         val geofence = buildGeofence(reminder)
-        if (geofence != null
-            && ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // 2
+        if (geofence != null &&
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            // 2 build geofence request
             geofencingClient
                 .addGeofences(buildGeofencingRequest(geofence), geofencePendingIntent)
+
+                 // build geofence request listener
                 .addOnSuccessListener {
-                    // 3
+                    // 3 on success
                     success()
                 }
                 .addOnFailureListener { error ->
-                    // 4
+                    // 4 on failure
                     failure(GeofenceErrorMessages.getErrorString(context, error))
                 }
         }
     }
 
+    // build geofence for reminder location
     private fun buildGeofence(reminder: ReminderDataItem): Geofence? {
         val latitude = reminder.latitude
         val longitude = reminder.longitude
@@ -76,6 +82,7 @@ class ReminderGeofence(private val context: Context) {
         return null
     }
 
+    // set the geofence trigger
     private fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
         return GeofencingRequest.Builder()
             .setInitialTrigger(0)
