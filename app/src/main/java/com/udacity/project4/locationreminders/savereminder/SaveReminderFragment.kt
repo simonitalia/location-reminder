@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.BuildConfig
@@ -94,10 +93,10 @@ class SaveReminderFragment : BaseFragment() {
 
              reminder?.let {
 
-                 // save reminder data item
+                 // save reminder
                  _viewModel.validateAndSaveReminder(it)
 
-                 //create geofence for reminder
+                 // create geofence for reminder
                  addGeofence(it)
              }
         }
@@ -283,7 +282,6 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     // add a geofence
-    // addGeoFence()
     private fun addGeofence(reminder: ReminderDataItem){
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -297,11 +295,9 @@ class SaveReminderFragment : BaseFragment() {
             reminder,
             success = {
                 Log.i(TAG, "Geofence added")
-//                Toast.makeText(requireContext(), "Geofences added", Toast.LENGTH_SHORT).show()
             },
             failure = { errorMessage ->
-                Log.i(TAG, "Geofence error: $errorMessage")
-//                Toast.makeText(requireContext(), errorString, Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "Geofence error: $errorMessage")
             }
         )
     }
@@ -312,12 +308,9 @@ class SaveReminderFragment : BaseFragment() {
             reminder,
             success = {
                 Log.i(TAG, "Geofences removed")
-//                Toast.makeText(requireContext(), "Geofences removed", Toast.LENGTH_SHORT).show()
-
             },
             failure = { errorMessage ->
-                Log.i(TAG, "Geofence error: $errorMessage")
-//                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "Geofence error: $errorMessage")
             }
         )
     }
