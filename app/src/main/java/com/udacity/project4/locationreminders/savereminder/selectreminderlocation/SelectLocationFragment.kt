@@ -427,7 +427,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // update viewModel properties
         _viewModel.reminderSelectedLocationStr.value =  locationString
         _viewModel.latitude.value = latLng.latitude
-        _viewModel.longitude.value = latLng.latitude
+        _viewModel.longitude.value = latLng.longitude
         _viewModel.selectedPOI.value = selectedPOI
 
         // navigate to reminder list
