@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
+import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
@@ -48,9 +49,10 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
             return
         }
 
+        // geofence triggered
         if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            Log.i(TAG, getString(R.string.geofence_entered))
             this.sendNotification(geofencingEvent.triggeringGeofences)
-            Log.i(TAG, "Triggering notification")
 
         } else {
             Log.i(TAG, "No geofenceTransition Event found!")

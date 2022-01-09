@@ -19,9 +19,9 @@ class ReminderGeofence(private val context: Context) {
         private const val GEOFENCE_RADIUS_IN_METERS = 100f
     }
 
-    val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
+    private val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
 
-    val geofencePendingIntent: PendingIntent by lazy {
+    private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
         PendingIntent.getBroadcast(
             context,

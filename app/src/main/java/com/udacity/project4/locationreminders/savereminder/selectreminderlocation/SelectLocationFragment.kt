@@ -281,8 +281,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
 
             map.isMyLocationEnabled = true
+            map.uiSettings.isMapToolbarEnabled = true
 
-            // move to current location
             // set zoom and camera position to user's current location
 
             // Test Location (Google HQ)
