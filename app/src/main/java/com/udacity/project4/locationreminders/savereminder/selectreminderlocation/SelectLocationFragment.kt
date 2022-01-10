@@ -34,6 +34,7 @@ import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
+import kotlinx.android.synthetic.main.fragment_save_reminder.*
 import org.koin.android.ext.android.inject
 import java.io.IOException
 
@@ -48,7 +49,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // background & foreground location tracking permissions
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1 // location tracking permission
-        private const val PERMISSION_CODE = 101
     }
 
     // Use Koin to get the view model of the SaveReminder
@@ -61,7 +61,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private var lastKnownLocation: Location? = null
 
     // selectedLocation
-    private var reminderSelectedLocationStr: String? = null
+    private var selectedLocationStr: String? = null
     private var latitude: Double? = null
     private var  longitude: Double? = null
     private var selectedPOI: PointOfInterest? = null
@@ -86,6 +86,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // on click listener for location search fab
         binding.locationSearchFloatingActionButton.setOnClickListener {
             loadPlacePicker()
+        }
+
+        // save button onClick lisetenr
+        binding.saveLocationButton.setOnClickListener {
+            onLocationSelected()
         }
 
         // enable map location search
@@ -205,9 +210,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             )
 
-            // update view model and trigger navigation
-            onLocationSelected(latLng, snippet, null)
-//            confirmLocationSelected(latLng, snippet, null)
+            // update reminder location properties
+            selectedLocationStr = "Dropped Pin"
+            latitude = latLng.latitude
+            longitude = latLng.longitude
+            selectedPOI = null
         }
     }
 
@@ -223,10 +230,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             // include marker window (call out shown above marker)
             poiMarker.showInfoWindow()
 
-            // update view model and trigger navigation
+            // update reminder location properties
             val descr = _viewModel.setLocationAsString(poi.latLng)
-            onLocationSelected(poi.latLng, descr, poi)
-//            confirmLocationSelected(poi.latLng, descr, poi)
+            selectedLocationStr =  poi.name
+            latitude = poi.latLng.latitude
+            longitude = poi.latLng.longitude
+            selectedPOI = poi
         }
     }
 
@@ -283,15 +292,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             map.isMyLocationEnabled = true
             map.uiSettings.isMapToolbarEnabled = true
 
-            // set zoom and camera position to user's current location
-
-            // Test Location (Google HQ)
-            val lat = 37.422160
-            val lon = -122.084270
-            val place = LatLng(lat, lon)
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, DEFAULT_ZOOM_LEVEL))
-
-            // move map to user's current location
+            // set zoom and move map camera position to device's current location
             moveCameraToDeviceLocation(map)
 
         } else {
@@ -408,7 +409,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             startActivity(intent)
 
             //set location de
-            onLocationSelected(latLng, locationString, selectedPOI)
+            onLocationSelected()
         }
         alertDialog.setNegativeButton("Cancel") { dialog, id ->
             dialog.cancel()
@@ -422,13 +423,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     // update viewModel and navigation
-    private fun onLocationSelected(latLng: LatLng, locationString: String, selectedPOI: PointOfInterest?) {
+    private fun onLocationSelected() {
 
         // update viewModel properties
-        _viewModel.reminderSelectedLocationStr.value =  locationString
-        _viewModel.latitude.value = latLng.latitude
-        _viewModel.longitude.value = latLng.longitude
-        _viewModel.selectedPOI.value = selectedPOI
+        _viewModel.reminderSelectedLocationStr.value =  this.selectedLocationStr
+        _viewModel.latitude.value = this.latitude
+        _viewModel.longitude.value = this.longitude
+        _viewModel.selectedPOI.value = this.selectedPOI
 
         // navigate to reminder list
         _viewModel.navigateBack()
