@@ -211,7 +211,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
 
             // update reminder location properties
-            selectedLocationStr = "Dropped Pin"
+            selectedLocationStr = snippet
             latitude = latLng.latitude
             longitude = latLng.longitude
             selectedPOI = null

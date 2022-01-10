@@ -6,6 +6,7 @@ import android.icu.text.MessagePattern
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.Navigator
 import androidx.navigation.navArgs
 import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityReminderDescriptionBinding
@@ -28,7 +29,8 @@ class ReminderDescriptionActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityReminderDescriptionBinding
-    private var reminder: ReminderDataItem? = null
+
+    private lateinit var reminder: ReminderDataItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +39,11 @@ class ReminderDescriptionActivity : AppCompatActivity() {
             R.layout.activity_reminder_description
         )
 
-    // TODO: Add the implementation of the reminder details
-//        reminder = intent.extras?.get(EXTRA_ReminderDataItem) as ReminderDataItem
+        // extract and assign extra object to reminder property
+        reminder = intent.getSerializableExtra(EXTRA_ReminderDataItem) as ReminderDataItem
+
+        // set text views data using arguments
+        binding.reminderDescription.text = reminder?.description ?: "No reminder details!"
 
     }
 }

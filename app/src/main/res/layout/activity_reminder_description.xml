@@ -19,10 +19,11 @@
         <!--TODO: add the design of the reminder details-->
 
         <TextView
+            android:id="@+id/reminderDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Reminder Details"
+            tools:text="Reminder Details"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
