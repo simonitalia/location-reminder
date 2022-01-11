@@ -29,7 +29,7 @@ data class ReminderDTO(
 
 
 /**
- * Mappings of DataModel and Database object
+ * Map Reminder DataModel object to Reminder Database object
  */
 fun reminderToReminderDto(reminder: ReminderDataItem): ReminderDTO {
 
@@ -40,18 +40,6 @@ fun reminderToReminderDto(reminder: ReminderDataItem): ReminderDTO {
         reminder.latitude,
         reminder.longitude,
         reminder.id
-    )
-}
-
-fun reminderDtoToReminder(reminderDTO: ReminderDTO): ReminderDataItem {
-
-    return ReminderDataItem(
-        reminderDTO.title,
-        reminderDTO.description,
-        reminderDTO.location,
-        reminderDTO.latitude,
-        reminderDTO.longitude,
-        reminderDTO.id
     )
 }
 
