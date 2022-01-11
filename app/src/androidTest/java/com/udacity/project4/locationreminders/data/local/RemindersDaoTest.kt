@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.locationreminders.reminderslist.reminderDtoToReminder
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +27,7 @@ import java.util.*
 /**
  * This implementation tests the the RemindersDatabase:
  * 1) ReminderDTO objects are successfully saved to the database
- * 2) ReminderDTO objects are successfully fetched as ReminderDataItem objects
+ * 2) ReminderDTO objects are successfully fetched from the database and the property values are as expected
  */
 
 @ExperimentalCoroutinesApi
@@ -62,7 +63,7 @@ class RemindersDaoTest {
 
         // GIVEN
         // Create and insert a mock reminderDTO in the db.
-        val reminder = ReminderDTO(
+        val reminderDto = ReminderDTO(
             "Test Title",
             "Test Description",
             "Test Location",
@@ -71,18 +72,19 @@ class RemindersDaoTest {
             id = UUID.randomUUID().toString()
         )
 
+
         // add reminder to db
-        database.remindersDao().saveReminder(reminder)
+        database.remindersDao().saveReminder(reminderDto)
 
         // WHEN - Get the reminderDTO by id from the database.
-        val reminderDTO = database.remindersDao().getReminderById(reminder.id)
+        val loadedReminderDto = database.remindersDao().getReminderById(reminderDto.id)
 
         // THEN - Check the loaded data contains the expected values.
-        assertThat<ReminderDataItem>(reminderDTO as ReminderDataItem, notNullValue())
-        assertThat(reminderDTO.id, `is`(reminder.id))
-        assertThat(reminderDTO.title, `is`(reminder.title))
-        assertThat(reminderDTO.description, `is`(reminder.description))
-        assertThat(reminderDTO.longitude, `is`(reminder.longitude))
-        assertThat(reminderDTO.latitude, `is`(reminder.latitude))
+        assertThat<ReminderDTO>(loadedReminderDto as ReminderDTO, notNullValue())
+        assertThat(loadedReminderDto.id, `is`(reminderDto.id))
+        assertThat(loadedReminderDto.title, `is`(reminderDto.title))
+        assertThat(loadedReminderDto.description, `is`(reminderDto.description))
+        assertThat(loadedReminderDto.longitude, `is`(reminderDto.longitude))
+        assertThat(loadedReminderDto.latitude, `is`(reminderDto.latitude))
     }
 }
