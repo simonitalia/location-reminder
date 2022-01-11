@@ -6,14 +6,14 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.udacity.project4.authentication.FirebaseUserLiveData
 import com.udacity.project4.base.BaseViewModel
-import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.RemindersLocalRepositoryInterface
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.launch
 
 class ReminderListViewModel(
     app: Application,
-    private val dataSource: ReminderDataSource
+    private val repository: RemindersLocalRepositoryInterface
 ) : BaseViewModel(app) {
 
     /**
@@ -45,7 +45,7 @@ class ReminderListViewModel(
         showLoading.value = true
         viewModelScope.launch {
             //interacting with the dataSource has to be through a coroutine
-            val result = dataSource.getReminders()
+            val result = repository.getReminders()
             showLoading.postValue(false)
             when (result) {
                 is Result.Success<*> -> {
