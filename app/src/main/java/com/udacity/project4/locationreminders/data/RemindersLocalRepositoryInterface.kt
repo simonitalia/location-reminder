@@ -5,6 +5,7 @@ import com.udacity.project4.locationreminders.data.dto.Result
 
 /**
  * Main entry point for accessing reminders data.
+ * Interface for RemindersLocalRepository class
  */
 interface RemindersLocalRepositoryInterface {
     suspend fun getReminders(): Result<List<ReminderDTO>>
