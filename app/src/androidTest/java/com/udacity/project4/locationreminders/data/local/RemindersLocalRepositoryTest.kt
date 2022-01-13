@@ -33,17 +33,6 @@ class RemindersLocalRepositoryTest {
     private lateinit var repository: RemindersLocalRepository
     private lateinit var database: RemindersDatabase
 
-//    private fun createMockReminderDto() : ReminderDTO {
-//        return ReminderDTO(
-//            "Test Title",
-//            "Test Description",
-//            "Test Location",
-//            37.422160,
-//            -122.084270,
-//            id = UUID.randomUUID().toString()
-//        )
-//    }
-
     // Executes each task synchronously using Architecture Components.
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
