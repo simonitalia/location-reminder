@@ -22,7 +22,7 @@
         android:name="com.udacity.project4.locationreminders.reminderslist.ReminderListFragment"
         android:label="ReminderListFragment">
         <action
-            android:id="@+id/to_save_reminder"
+            android:id="@+id/action_reminderListFragment_to_saveReminderFragment"
             app:destination="@id/saveReminderFragment" />
     </fragment>
 

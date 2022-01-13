@@ -68,7 +68,7 @@ class ReminderListFragment : BaseFragment() {
         setupRecyclerView()
 
         binding.addReminderFAB.setOnClickListener {
-            navigateToAddReminder()
+            navigateToSaveReminderFragment()
         }
 
         // If the user presses the back button, bring them back to sign in screen
@@ -129,11 +129,11 @@ class ReminderListFragment : BaseFragment() {
         })
     }
 
-    private fun navigateToAddReminder() {
+    private fun navigateToSaveReminderFragment() {
         //use the navigationCommand live data to navigate between the fragments
         _viewModel.navigationCommand.postValue(
             NavigationCommand.To(
-                ReminderListFragmentDirections.toSaveReminder()
+                ReminderListFragmentDirections.actionReminderListFragmentToSaveReminderFragment()
             )
         )
     }
