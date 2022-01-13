@@ -6,14 +6,14 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.udacity.project4.authentication.FirebaseUserLiveData
 import com.udacity.project4.base.BaseViewModel
-import com.udacity.project4.locationreminders.data.RemindersLocalRepositoryInterface
+import com.udacity.project4.locationreminders.data.RemindersRepositoryInterface
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.launch
 
 class ReminderListViewModel(
     app: Application,
-    private val repository: RemindersLocalRepositoryInterface
+    private val repository: RemindersRepositoryInterface
 ) : BaseViewModel(app) {
 
     /**

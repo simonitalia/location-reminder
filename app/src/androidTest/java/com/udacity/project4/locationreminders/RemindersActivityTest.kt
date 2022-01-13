@@ -1,10 +1,10 @@
-package com.udacity.project4
+package com.udacity.project4.locationreminders
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.udacity.project4.locationreminders.data.RemindersLocalRepositoryInterface
+import com.udacity.project4.locationreminders.data.RemindersRepositoryInterface
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderListViewModel
@@ -25,7 +25,7 @@ import org.koin.test.get
 class RemindersActivityTest :
     AutoCloseKoinTest() {// Extended Koin Test - embed autoclose @after method to close Koin after every test
 
-    private lateinit var repository: RemindersLocalRepositoryInterface
+    private lateinit var repository: RemindersRepositoryInterface
     private lateinit var appContext: Application
 
     /**
@@ -40,16 +40,16 @@ class RemindersActivityTest :
             viewModel {
                 ReminderListViewModel(
                     appContext,
-                    get() as RemindersLocalRepositoryInterface
+                    get() as RemindersRepositoryInterface
                 )
             }
             single {
                 SaveReminderViewModel(
                     appContext,
-                    get() as RemindersLocalRepositoryInterface
+                    get() as RemindersRepositoryInterface
                 )
             }
-            single { RemindersLocalRepository(get()) as RemindersLocalRepositoryInterface }
+            single { RemindersLocalRepository(get()) as RemindersRepositoryInterface }
             single { LocalDB.createRemindersDao(appContext) }
         }
         //declare a new koin module

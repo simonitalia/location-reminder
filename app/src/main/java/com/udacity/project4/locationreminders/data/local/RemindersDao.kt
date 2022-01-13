@@ -8,7 +8,7 @@ import androidx.room.Update
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 
 /**
- * Data Access Object for the reminders table (aka database table Queries)
+ * Data Access Object for the reminders table (aka RemindersDatabase table Queries)
  */
 @Dao
 interface RemindersDao {
