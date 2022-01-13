@@ -8,6 +8,7 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.dto.succeeded
+import com.udacity.project4.util.RemindersTestUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -20,7 +21,7 @@ import java.util.*
 import org.hamcrest.CoreMatchers.`is`
 
 /**
- * Testing implementation of the RemindersLocalRepository.kt
+ * Testing direct implementation of the RemindersLocalRepository.kt
  */
 
 @ExperimentalCoroutinesApi
@@ -32,16 +33,16 @@ class RemindersLocalRepositoryTest {
     private lateinit var repository: RemindersLocalRepository
     private lateinit var database: RemindersDatabase
 
-    private fun createMockReminderDto() : ReminderDTO {
-        return ReminderDTO(
-            "Test Title",
-            "Test Description",
-            "Test Location",
-            37.422160,
-            -122.084270,
-            id = UUID.randomUUID().toString()
-        )
-    }
+//    private fun createMockReminderDto() : ReminderDTO {
+//        return ReminderDTO(
+//            "Test Title",
+//            "Test Description",
+//            "Test Location",
+//            37.422160,
+//            -122.084270,
+//            id = UUID.randomUUID().toString()
+//        )
+//    }
 
     // Executes each task synchronously using Architecture Components.
     @get:Rule
@@ -104,7 +105,7 @@ class RemindersLocalRepositoryTest {
         // GIVEN
         // Create and insert 3 mock reminderDTOs in the db.
         for (mock in 1..3) {
-            createMockReminderDto().apply {
+            RemindersTestUtils.createMockReminderDto().apply {
                 database.remindersDao().saveReminder(this)
             }
         }
@@ -122,7 +123,7 @@ class RemindersLocalRepositoryTest {
         // GIVEN
         // Create and insert 3 mock reminderDTOs in the db.
         for (mock in 1..3) {
-            createMockReminderDto().apply {
+            RemindersTestUtils.createMockReminderDto().apply {
                 database.remindersDao().saveReminder(this)
             }
         }

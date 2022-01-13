@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.util.RemindersTestUtils
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -16,7 +17,6 @@ import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Test
-import java.util.*
 
 /**
  * This implementation tests the the RemindersDatabase:
@@ -57,15 +57,7 @@ class RemindersDaoTest {
 
         // GIVEN
         // Create and insert a mock reminderDTO in the db.
-        val reminderDto = ReminderDTO(
-            "Test Title",
-            "Test Description",
-            "Test Location",
-            37.422160,
-            -122.084270,
-            id = UUID.randomUUID().toString()
-        )
-
+        val reminderDto = RemindersTestUtils.createMockReminderDto()
 
         // add reminder to db
         database.remindersDao().saveReminder(reminderDto)
