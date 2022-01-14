@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.dto.succeeded
 import com.udacity.project4.util.RemindersTestUtils
@@ -17,7 +16,6 @@ import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.*
 import org.junit.runner.RunWith
-import java.util.*
 import org.hamcrest.CoreMatchers.`is`
 
 /**
@@ -63,14 +61,7 @@ class RemindersLocalRepositoryTest {
     @Test
     fun saveReminderDto_retrievesReminderDto() = runBlocking {
         // GIVEN - A new reminderDto saved in the database.
-        val newReminderDto = ReminderDTO(
-            "Test Title",
-            "Test Description",
-            "Test Location",
-            37.422160,
-            -122.084270,
-            id = UUID.randomUUID().toString()
-        )
+        val newReminderDto = RemindersTestUtils.createMockReminderDto()
 
         repository.saveReminder(newReminderDto)
 
