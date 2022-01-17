@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.utils.RemindersAndroidTestUtils
+import com.udacity.project4.utils.RemindersAndroidTestUtil
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -57,7 +57,7 @@ class RemindersDaoTest {
 
         // GIVEN
         // Create and insert a mock reminderDTO in the db.
-        val reminderDto = RemindersAndroidTestUtils.createMockReminderDto()
+        val reminderDto = RemindersAndroidTestUtil.createMockReminderDto()
 
         // add reminder to db
         database.remindersDao().saveReminder(reminderDto)

@@ -3,7 +3,7 @@ package com.udacity.project4.utils
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import java.util.*
 
-object RemindersAndroidTestUtils {
+object RemindersAndroidTestUtil {
 
     fun createMockReminderDto() : ReminderDTO {
         return ReminderDTO(

@@ -12,7 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.local.FakeAndroidTestRepository
-import com.udacity.project4.utils.RemindersAndroidTestUtils
+import com.udacity.project4.utils.RemindersAndroidTestUtil
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
@@ -63,7 +63,7 @@ class ReminderListFragmentTest {
     fun savedReminder_checkReminderTextIsDisplayedInUi() = runBlockingTest {
 
         // GIVEN - Add ReminderDto to the DB
-        val reminderDto = RemindersAndroidTestUtils.createMockReminderDto()
+        val reminderDto = RemindersAndroidTestUtil.createMockReminderDto()
         fakeRepository?.saveReminder(reminderDto)
 
         //WHEN - On Reminder List Screen

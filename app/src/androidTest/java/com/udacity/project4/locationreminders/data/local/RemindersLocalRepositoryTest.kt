@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.dto.succeeded
-import com.udacity.project4.utils.RemindersAndroidTestUtils
+import com.udacity.project4.utils.RemindersAndroidTestUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -61,7 +61,7 @@ class RemindersLocalRepositoryTest {
     @Test
     fun saveReminderDto_retrievesReminderDto() = runBlocking {
         // GIVEN - A new reminderDto saved in the database.
-        val newReminderDto = RemindersAndroidTestUtils.createMockReminderDto()
+        val newReminderDto = RemindersAndroidTestUtil.createMockReminderDto()
 
         repository.saveReminder(newReminderDto)
 
@@ -85,7 +85,7 @@ class RemindersLocalRepositoryTest {
         // GIVEN
         // Create and insert 3 mock reminderDTOs in the db.
         for (mock in 1..3) {
-            RemindersAndroidTestUtils.createMockReminderDto().apply {
+            RemindersAndroidTestUtil.createMockReminderDto().apply {
                 database.remindersDao().saveReminder(this)
             }
         }
@@ -103,7 +103,7 @@ class RemindersLocalRepositoryTest {
         // GIVEN
         // Create and insert 3 mock reminderDTOs in the db.
         for (mock in 1..3) {
-            RemindersAndroidTestUtils.createMockReminderDto().apply {
+            RemindersAndroidTestUtil.createMockReminderDto().apply {
                 database.remindersDao().saveReminder(this)
             }
         }
