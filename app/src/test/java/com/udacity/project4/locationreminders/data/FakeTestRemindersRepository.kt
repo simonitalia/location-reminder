@@ -4,7 +4,10 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import java.util.LinkedHashMap
 
-//Use Fake Repository (FakeDataSource) that acts as a test double to the LocalDataSource
+/**
+ * Implementation of a fake repository / data source for easy testing
+ */
+
 class FakeTestRemindersRepository : RemindersRepositoryInterface {
 
     var remindersServiceData: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()

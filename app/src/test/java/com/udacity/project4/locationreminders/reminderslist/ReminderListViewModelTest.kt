@@ -20,7 +20,6 @@ import org.junit.runner.RunWith
  * Testing for ReminderListViewModel and its live data objects
  */
 
-
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class ReminderListViewModelTest {
@@ -52,10 +51,7 @@ class ReminderListViewModelTest {
 
         // initialize viewModel
         viewModel = ReminderListViewModel(MyApp(), repository)
-
     }
-
-
 
     @Test
     fun loadReminders_showLoading() {
@@ -66,7 +62,7 @@ class ReminderListViewModelTest {
         // Load the reminders in the view model.
         viewModel.loadReminders()
 
-        // Then assert that the progress indicator is shown.
+        // Then assert that the loading indicator value is set to true
         Assert.assertThat(
             viewModel.showLoading.getOrAwaitValue(),
             CoreMatchers.`is`(true)
@@ -75,11 +71,10 @@ class ReminderListViewModelTest {
         // Execute pending coroutines actions.
         mainCoroutineRule.resumeDispatcher()
 
-        // Then assert that the progress indicator is hidden.
-//        Assert.assertThat(
-//            statisticsViewModel.dataLoading.getOrAwaitValue(),
-//            CoreMatchers.`is`(false)
-//        )
+        // Then assert that the loading indicator is value is set to false.
+        Assert.assertThat(
+            viewModel.showLoading.getOrAwaitValue(),
+            CoreMatchers.`is`(false)
+        )
     }
-
 }
