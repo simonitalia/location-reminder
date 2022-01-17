@@ -7,6 +7,10 @@ import com.udacity.project4.locationreminders.data.dto.Result.Error
 import com.udacity.project4.locationreminders.data.dto.Result.Success
 import java.util.LinkedHashMap
 
+/**
+ * Implementation of a fake repository  / data source for easy testing
+ */
+
 class FakeAndroidTestRepository: RemindersRepositoryInterface {
 
     var remindersServiceData: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
