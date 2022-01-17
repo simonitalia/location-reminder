@@ -1,18 +1,10 @@
 package com.udacity.project4.locationreminders.reminderslist
 
-import android.app.Activity
-import android.app.Application
-import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.viewModels
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.firebase.FirebaseApp
 import com.udacity.project4.MyApp
-import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.FakeTestRemindersRepository
 import com.udacity.project4.locationreminders.utils.MainCoroutineRule
 import com.udacity.project4.locationreminders.utils.RemindersTestUtil
@@ -22,9 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.junit.*
 import org.junit.runner.RunWith
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.robolectric.annotation.Config
-import java.security.AccessController.getContext
 
 /**
  * Testing for ReminderListViewModel and its live data objects
@@ -39,14 +29,10 @@ class ReminderListViewModelTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     // Use a fake repository to be injected into the viewmodel
-    private lateinit var repository: FakeTestRemindersRepository
+    private val repository = FakeTestRemindersRepository()
 
     // Subject under test (sut)
     private lateinit var viewModel: ReminderListViewModel
-
-    private lateinit var appContext: Application
-
-    private lateinit var activityScenario: ActivityScenario<RemindersActivity>
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -54,33 +40,26 @@ class ReminderListViewModelTest {
 
     // setup before running each test
     @Before
-    fun init() {
+    fun setup() = runBlocking {
 
-        // get application context
-        appContext = ApplicationProvider.getApplicationContext()
+        // initialize firebase app
+        FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().targetContext)
 
-        // initialize repository
-        repository = FakeTestRemindersRepository()
-
-        activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-    }
-
-    fun setupViewModel() = runBlocking {
+        // initialize viewModel
+        viewModel = ReminderListViewModel(MyApp(), repository)
 
         // initialise reminders repo with some reminders (3)
         repository.saveReminder(RemindersTestUtil.createMockReminderDto())
         repository.saveReminder(RemindersTestUtil.createMockReminderDto())
         repository.saveReminder(RemindersTestUtil.createMockReminderDto())
-
-        // initialize viewModel
-        viewModel = ReminderListViewModel(appContext as MyApp, repository)
     }
 
     @After
-    fun closeScenario() {
-        activityScenario.close()
+    fun cleanupRepository() = runBlocking {
+        repository.deleteAllReminders()
     }
 
+    // Verify showLoading value is set to true when loading, then false after loading
     @Test
     fun loadReminders_showLoading() {
 
@@ -105,4 +84,21 @@ class ReminderListViewModelTest {
             CoreMatchers.`is`(false)
         )
     }
+
+    // Verify Snackbar error message value is triggered when loading reminders fails
+    @Test
+    fun loadReminders_showSnackBar() = runBlocking {
+
+        //simulate error response
+        repository.setReturnError(true)
+
+        // trigger fetch reminders from repo
+        viewModel.loadReminders()
+
+        Assert.assertThat(viewModel.showSnackBar.getOrAwaitValue(), CoreMatchers.`is`("Test exception"))
+    }
+
+
+
+
 }
