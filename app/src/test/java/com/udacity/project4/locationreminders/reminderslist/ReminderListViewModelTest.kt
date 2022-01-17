@@ -63,22 +63,22 @@ class ReminderListViewModelTest {
     @Test
     fun loadReminders_showLoading() {
 
-        // Pause dispatcher so you can verify initial values.
+        // GIVEN - Pause dispatcher so you can verify initial values.
         mainCoroutineRule.pauseDispatcher()
 
-        // Load the reminders in the view model.
+        // WHEN - Load the reminders in the view model.
         viewModel.loadReminders()
 
-        // Then assert that the loading indicator value is set to true
+        // THEN - assert showLoading value
         Assert.assertThat(
             viewModel.showLoading.getOrAwaitValue(),
             CoreMatchers.`is`(true)
         )
 
-        // Execute pending coroutines actions.
+        // GIVEN - Execute pending coroutines actions.
         mainCoroutineRule.resumeDispatcher()
 
-        // Then assert that the loading indicator is value is set to false.
+        // THEN - assert showLoading value
         Assert.assertThat(
             viewModel.showLoading.getOrAwaitValue(),
             CoreMatchers.`is`(false)
@@ -87,16 +87,46 @@ class ReminderListViewModelTest {
 
     // Verify Snackbar error message value is triggered when loading reminders fails
     @Test
-    fun loadReminders_showSnackBar() = runBlocking {
+    fun loadRemindersWhenRemindersAreUnavailable_showSnackBar() = runBlocking {
 
-        //simulate error response
+        //GIVEN - Simulate repo error response
         repository.setReturnError(true)
 
-        // trigger fetch reminders from repo
+        // WHEN - Load reminders
         viewModel.loadReminders()
 
+        // THEN - assert showSnackBar value is set with error message
         Assert.assertThat(viewModel.showSnackBar.getOrAwaitValue(), CoreMatchers.`is`("Test exception"))
     }
+
+    @Test
+    fun loadRemindersWithNoReminders_showNoData() = runBlocking{
+
+        // GIVEN - clear all reminders
+        repository.deleteAllReminders()
+
+        // WHEN - fetch reminders
+        viewModel.loadReminders()
+
+        //THEN - assert showNoData value
+        Assert.assertThat(viewModel.showNoData.getOrAwaitValue(), CoreMatchers.`is`(true))
+    }
+
+    @Test
+    fun loadRemindersWithReminders_showNoData() = runBlocking{
+
+        // GIVEN - initialise reminders repo with a reminders
+        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
+
+        // WHEN - fetch reminders
+        viewModel.loadReminders()
+
+        //THEN - assert showNoData value, and remindersList size
+        Assert.assertThat(viewModel.showNoData.getOrAwaitValue(), CoreMatchers.`is`(false))
+        Assert.assertThat(viewModel.reminderList.value?.size, CoreMatchers.`is`(4))
+    }
+
+
 
 
 
