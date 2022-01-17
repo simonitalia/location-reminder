@@ -32,11 +32,6 @@ apply plugin: 'com.google.gms.google-services'
         returnDefaultValues = true
     }
 
-    //dataBinding {
-    //    enabled = true
-    //    enabledForTests = true
-    //}
-
     buildFeatures {
         dataBinding true // bind data to layout xml files
         viewBinding = true //bind data to views
@@ -65,8 +60,6 @@ dependencies {
 
     // Android Lifecycle
     kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
-//    implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
-//    implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$archLifecycleVersion"
 
@@ -146,6 +139,5 @@ dependencies {
 
     // Overcome single dex file limits
     implementation("androidx.multidex:multidex:$multidex_version")
-//    implementation("com.android.support:multidex:1.0.3")
 }
 
