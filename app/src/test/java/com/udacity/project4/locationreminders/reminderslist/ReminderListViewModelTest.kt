@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.junit.*
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 import org.robolectric.annotation.Config
 
 /**
@@ -47,23 +48,24 @@ class ReminderListViewModelTest {
 
         // initialize viewModel
         viewModel = ReminderListViewModel(MyApp(), repository)
-
-        // initialise reminders repo with some reminders (3)
-        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
-        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
-        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
     }
 
     @After
-    fun cleanupRepository() = runBlocking {
+    fun cleanup() = runBlocking {
         repository.deleteAllReminders()
+        stopKoin() // ensure single instance fof Koin
     }
 
     // Verify showLoading value is set to true when loading, then false after loading
     @Test
-    fun loadReminders_showLoading() {
+    fun loadReminders_showLoading() = runBlocking {
 
-        // GIVEN - Pause dispatcher so you can verify initial values.
+        // GIVEN - initialise reminders repo with some reminders (3)
+        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
+        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
+        repository.saveReminder(RemindersTestUtil.createMockReminderDto())
+
+        // Pause dispatcher so you can verify initial values.
         mainCoroutineRule.pauseDispatcher()
 
         // WHEN - Load the reminders in the view model.
@@ -123,12 +125,7 @@ class ReminderListViewModelTest {
 
         //THEN - assert showNoData value, and remindersList size
         Assert.assertThat(viewModel.showNoData.getOrAwaitValue(), CoreMatchers.`is`(false))
-        Assert.assertThat(viewModel.reminderList.value?.size, CoreMatchers.`is`(4))
+        Assert.assertThat(viewModel.reminderList.value?.size, CoreMatchers.`is`(1))
     }
-
-
-
-
-
 
 }
