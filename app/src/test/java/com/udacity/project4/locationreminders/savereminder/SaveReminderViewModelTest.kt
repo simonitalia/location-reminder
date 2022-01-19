@@ -5,10 +5,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.firebase.FirebaseApp
-import com.udacity.project4.R
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.locationreminders.data.FakeTestRemindersRepository
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.utils.MainCoroutineRule
 import com.udacity.project4.locationreminders.utils.RemindersTestUtil
 import com.udacity.project4.locationreminders.utils.getOrAwaitValue
@@ -19,7 +21,6 @@ import org.junit.*
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import org.robolectric.annotation.Config
-import org.mockito.Mockito.mock
 
 /**
  * Testing for SaveReminderView live data objects
@@ -33,7 +34,7 @@ class SaveReminderViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    // use a mock instance of the app to pass into the viewModel constructor
+    // Use a mock instance of the app to pass into the viewModel constructor
     private lateinit var app: Application
 
     // Use a fake repository to be injected into the viewmodel
@@ -41,6 +42,9 @@ class SaveReminderViewModelTest {
 
     // Subject under test (sut)
     private lateinit var viewModel: SaveReminderViewModel
+
+    // Mock reminder
+    private lateinit var reminder: ReminderDataItem
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -56,6 +60,19 @@ class SaveReminderViewModelTest {
 
         // initialize viewModel with mockApp and fake repo
         viewModel = SaveReminderViewModel(app, repository)
+
+        // initialize mock reminder
+        reminder = RemindersTestUtil.createMockReminderDto().run {
+            RemindersTestUtil.reminderDtoToReminder(this)
+        }
+
+        // set view model live data values with reminder values
+        viewModel.reminderTitle.value = reminder.title
+        viewModel.reminderDescription.value = reminder.description
+        viewModel.reminderSelectedLocationStr.value = reminder.location
+        viewModel.latitude.value = reminder.latitude
+        viewModel.longitude.value = reminder.longitude
+        viewModel.selectedPOI.value = RemindersTestUtil.createMockPOI()
     }
 
     @After
@@ -67,17 +84,7 @@ class SaveReminderViewModelTest {
     @Test
     fun saveReminder_showLoading() = runBlocking{
 
-        //GIVEN - New Reminder created and values assigned to view model
-        val reminder = RemindersTestUtil.createMockReminderDto().run {
-             RemindersTestUtil.reminderDtoToReminder(this)
-        }
-
-        viewModel.reminderTitle.value = reminder.title
-        viewModel.reminderDescription.value = reminder.description
-        viewModel.reminderSelectedLocationStr.value = reminder.location
-        viewModel.latitude.value = reminder.latitude
-        viewModel.longitude.value = reminder.longitude
-        viewModel.selectedPOI.value = RemindersTestUtil.createMockPOI()
+        // GIVEN - New Reminder created and values assigned to view model
 
         // Pause dispatcher so you can verify initial values.
         mainCoroutineRule.pauseDispatcher()
@@ -104,20 +111,8 @@ class SaveReminderViewModelTest {
     @Test
     fun createReminderWithNullTitle_validateAndSaveReminder() {
 
-        //GIVEN - New Reminder created and values assigned to view model
-        val reminder = RemindersTestUtil.createMockReminderDto().run {
-            RemindersTestUtil.reminderDtoToReminder(this)
-        }
-
-        // nullify title
+        // GIVEN - Null title
         reminder.title = null
-
-        viewModel.reminderTitle.value = reminder.title
-        viewModel.reminderDescription.value = reminder.description
-        viewModel.reminderSelectedLocationStr.value = reminder.location
-        viewModel.latitude.value = reminder.latitude
-        viewModel.longitude.value = reminder.longitude
-        viewModel.selectedPOI.value = RemindersTestUtil.createMockPOI()
 
         // WHEN - Validate and Save the reminder
         viewModel.validateAndSaveReminder(reminder)
@@ -132,20 +127,8 @@ class SaveReminderViewModelTest {
     @Test
     fun createReminderWithNullLocation_validateAndSaveReminder() {
 
-        //GIVEN - New Reminder created and values assigned to view model
-        val reminder = RemindersTestUtil.createMockReminderDto().run {
-            RemindersTestUtil.reminderDtoToReminder(this)
-        }
-
-        // nullify location
+        // GIVEN - Null location
         reminder.location = null
-
-        viewModel.reminderTitle.value = reminder.title
-        viewModel.reminderDescription.value = reminder.description
-        viewModel.reminderSelectedLocationStr.value = reminder.location
-        viewModel.latitude.value = reminder.latitude
-        viewModel.longitude.value = reminder.longitude
-        viewModel.selectedPOI.value = RemindersTestUtil.createMockPOI()
 
         // WHEN - Validate and Save the reminder
         viewModel.validateAndSaveReminder(reminder)
@@ -160,17 +143,7 @@ class SaveReminderViewModelTest {
     @Test
     fun saveReminder_showToast()  {
 
-        //GIVEN - New Reminder created and values assigned to view model
-        val reminder = RemindersTestUtil.createMockReminderDto().run {
-            RemindersTestUtil.reminderDtoToReminder(this)
-        }
-
-        viewModel.reminderTitle.value = reminder.title
-        viewModel.reminderDescription.value = reminder.description
-        viewModel.reminderSelectedLocationStr.value = reminder.location
-        viewModel.latitude.value = reminder.latitude
-        viewModel.longitude.value = reminder.longitude
-        viewModel.selectedPOI.value = RemindersTestUtil.createMockPOI()
+        // GIVEN - New Reminder created and values assigned to view model
 
         // WHEN - Validate and Save the reminder
         viewModel.validateAndSaveReminder(reminder)
@@ -185,26 +158,73 @@ class SaveReminderViewModelTest {
     @Test
     fun saveReminder_navigateBack()  {
 
-        //GIVEN - New Reminder created and values assigned to view model
-
-        val reminder = RemindersTestUtil.createMockReminderDto().run {
-            RemindersTestUtil.reminderDtoToReminder(this)
-        }
-
-        viewModel.reminderTitle.value = reminder.title
-        viewModel.reminderDescription.value = reminder.description
-        viewModel.reminderSelectedLocationStr.value = reminder.location
-        viewModel.latitude.value = reminder.latitude
-        viewModel.longitude.value = reminder.longitude
-        viewModel.selectedPOI.value = RemindersTestUtil.createMockPOI()
+        // GIVEN - New Reminder created and values assigned to view model
 
         // WHEN - Validate and Save the reminder
         viewModel.validateAndSaveReminder(reminder)
 
-        //THEN - assert navigationCommand value
+        // THEN - assert navigationCommand value
         Assert.assertThat(
             viewModel.navigationCommand.value,
             CoreMatchers.`is`(NavigationCommand.Back)
+        )
+    }
+
+    @Test
+    fun createReminder_checkViewModelLiveDataValues() {
+
+        // GIVEN - Reminder and POI
+
+        // THEN - Validate view model properties are set to expected values
+        Assert.assertThat(
+            viewModel.reminderTitle.getOrAwaitValue(), CoreMatchers.`is`("Test Title")
+        )
+        Assert.assertThat(
+            viewModel.reminderDescription.getOrAwaitValue(), CoreMatchers.`is`("Test Description")
+        )
+        Assert.assertThat(
+            viewModel.reminderSelectedLocationStr.getOrAwaitValue(), CoreMatchers.`is`("Test Location")
+        )
+        Assert.assertThat(
+            viewModel.latitude.getOrAwaitValue(), CoreMatchers.`is`(37.422160)
+        )
+        Assert.assertThat(
+            viewModel.longitude.getOrAwaitValue(), CoreMatchers.`is`(-122.084270)
+        )
+
+        //check point of interest values
+        Assert.assertThat(
+            viewModel.selectedPOI.value!!.latLng, CoreMatchers.equalTo(LatLng(37.422160, -122.084270))
+        )
+        Assert.assertThat(
+            viewModel.selectedPOI.value!!.name, CoreMatchers.equalTo("Test Name")
+        )
+        Assert.assertThat(
+            viewModel.selectedPOI.value!!.placeId, CoreMatchers.equalTo("Test POI")
+        )
+
+        // WHEN - Clear view model live data values
+        viewModel.onClear()
+
+        // THEN - Validate view model properties are set to null
+
+        Assert.assertThat(
+            viewModel.reminderTitle.value, CoreMatchers.equalTo(null)
+        )
+        Assert.assertThat(
+            viewModel.reminderDescription.getOrAwaitValue(), CoreMatchers.equalTo(null)
+        )
+        Assert.assertThat(
+            viewModel.reminderSelectedLocationStr.getOrAwaitValue(), CoreMatchers.equalTo(null)
+        )
+        Assert.assertThat(
+            viewModel.latitude.getOrAwaitValue(), CoreMatchers.equalTo(null)
+        )
+        Assert.assertThat(
+            viewModel.longitude.getOrAwaitValue(), CoreMatchers.equalTo(null)
+        )
+        Assert.assertThat(
+            viewModel.selectedPOI.getOrAwaitValue(), CoreMatchers.equalTo(null)
         )
     }
 }

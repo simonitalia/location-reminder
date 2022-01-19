@@ -20,7 +20,7 @@ object RemindersTestUtil {
     }
 
     fun createMockPOI() : PointOfInterest {
-        return PointOfInterest(LatLng(37.422160, -122.084270),"Test POI", "Googleplex")
+        return PointOfInterest(LatLng(37.422160, -122.084270),"Test POI", "Test Name")
 
     }
 
