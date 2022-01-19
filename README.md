@@ -1,80 +1,194 @@
 # Location Reminder
 
-A Todo list app with location reminders that remind the user to do something when he reaches a specific location. The app will require the user to create an account and login to set and access reminders.
+- This is a reminder app that allows a user to create and save a reminder when they arrive a at location;
+- Users select and save locations by setting map markers on a map;
+- When the user reaches a the location they have saved in their reminder, the app will send a notification with the remidner details;
+- The app requires the user to create an account and login to set and access reminders;
+- The app fully supports data peristence using user preferences and local database. 
 
-## Getting Started
+# Core Technologies
 
-1. Clone the project to your local machine.
-2. Open the project using Android Studio.
+- FirebaseUI (Authentication with custom layout)
 
-### Dependencies
+- Room (Local Database)
 
-```
-1. A created project on Firebase console.
-2. A create a project on Google console.
-```
+- Google Maps
 
-### Installation
+- Geofences, Location
 
-Step by step explanation of how to get a dev environment running.
+- Notifications
 
-```
-1. To enable Firebase Authentication:
-        a. Go to the authentication tab at the Firebase console and enable Email/Password and Google Sign-in methods.
-        b. download `google-services.json` and add it to the app.
-2. To enable Google Maps:
-    a. Go to APIs & Services at the Google console.
-    b. Select your project and go to APIs & Credentials.
-    c. Create a new api key and restrict it for android apps.
-    d. Add your package name and SHA-1 signing-certificate fingerprint.
-    c. Enable Maps SDK for Android from API restrictions and Save.
-    d. Copy the api key to the `google_maps_api.xml`
-3. Run the app on your mobile phone or emulator with Google Play Services in it.
-```
+- ViewModel, LiveDaya (MVVM)
 
-## Testing
+- Koin
 
-Right click on the `test` or `androidTest` packages and select Run Tests
-
-### Break Down Tests
-
-Explain what each test does and why
-
-```
-1.androidTest
-        //TODO: Students explain their testing here.
-2. test
-        //TODO: Students explain their testing here.
-```
-
-## Project Instructions
-    1. Create a Login screen to ask users to login using an email address or a Google account.  Upon successful login, navigate the user to the Reminders screen.   If there is no account, the app should navigate to a Register screen.
-    2. Create a Register screen to allow a user to register using an email address or a Google account.
-    3. Create a screen that displays the reminders retrieved from local storage. If there are no reminders, display a   "No Data"  indicator.  If there are any errors, display an error message.
-    4. Create a screen that shows a map with the user's current location and asks the user to select a point of interest to create a reminder.
-    5. Create a screen to add a reminder when a user reaches the selected location.  Each reminder should include
-        a. title
-        b. description
-        c. selected location
-    6. Reminder data should be saved to local storage.
-    7. For each reminder, create a geofencing request in the background that fires up a notification when the user enters the geofencing area.
-    8. Provide testing for the ViewModels, Coroutines and LiveData objects.
-    9. Create a FakeDataSource to replace the Data Layer and test the app in isolation.
-    10. Use Espresso and Mockito to test each screen of the app:
-        a. Test DAO (Data Access Object) and Repository classes.
-        b. Add testing for the error messages.
-        c. Add End-To-End testing for the Fragments navigation.
+- Android Test / Test
+  - Espresso (UI Test Framework)
+  - Roboelectric (Integration Test Framework)
+  - Junit, Mockito (Unit Test Framework)
 
 
-## Student Deliverables:
+# Setup
 
-1. APK file of the final project.
-2. Git Repository with the code.
+## Installation
 
-## Built With
+This project's repository can be cloned via git or downloaded as a zip file.
 
-* [Koin](https://github.com/InsertKoinIO/koin) - A pragmatic lightweight dependency injection framework for Kotlin.
-* [FirebaseUI Authentication](https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md) - FirebaseUI provides a drop-in auth solution that handles the UI flows for signing
-* [JobIntentService](https://developer.android.com/reference/androidx/core/app/JobIntentService) - Run background service from the background application, Compatible with >= Android O.
+
+## Project Dependencies
+
+### App dependencies
+implementation "androidx.appcompat:appcompat:$appCompatVersion"
+implementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
+implementation "androidx.annotation:annotation:$androidXAnnotations"
+implementation "androidx.cardview:cardview:$cardVersion"
+implementation "com.google.android.material:material:$materialVersion"
+implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+implementation "androidx.constraintlayout:constraintlayout:$constraintVersion"
+implementation 'com.google.code.gson:gson:2.8.5'
+
+### Navigation dependencies
+implementation 'androidx.appcompat:appcompat:1.3.1'
+implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+
+### Android Lifecycle
+kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
+implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
+implementation "androidx.lifecycle:lifecycle-livedata-ktx:$archLifecycleVersion"
+
+### navigation
+implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+
+### Room dependencies
+implementation "androidx.room:room-ktx:$roomVersion"
+implementation "androidx.room:room-runtime:$roomVersion"
+kapt "androidx.room:room-compiler:$roomVersion"
+
+### Coroutines Dependencies
+implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+### Koin
+implementation "org.koin:koin-android:$koinVersion"
+implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
+androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
+
+### Dependencies for local unit tests
+testImplementation "junit:junit:$junitVersion"
+testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
+testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+testImplementation "org.robolectric:robolectric:$robolectricVersion"
+testImplementation "com.google.truth:truth:$truthVersion"
+testImplementation "org.mockito:mockito-core:$mockitoVersion"
+
+### AndroidX Test - JVM testing
+testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+testImplementation "androidx.test:rules:$androidXTestRulesVersion"
+
+### AndroidX Test - Instrumented testing
+androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+androidTestImplementation "androidx.test:rules:$androidXTestRulesVersion"
+androidTestImplementation "androidx.room:room-testing:$roomVersion"
+androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
+androidTestImplementation('androidx.test:runner:1.4.0')
+androidTestImplementation('androidx.test:rules:1.4.0')
+
+### Espresso UI
+implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
+androidTestImplementation "junit:junit:$junitVersion"
+debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
+implementation "androidx.test:core:$androidXTestCoreVersion"
+implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
+
+### Mockito mock testing
+androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
+androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
+
+### Maps, Places & Geofencing
+implementation "com.google.android.gms:play-services-location:$playServicesVersion"
+implementation 'com.google.android.gms:play-services-maps:17.0.1'
+implementation 'com.google.android.gms:play-services-places:17.0.0'
+
+### Firebase
+implementation platform('com.google.firebase:firebase-bom:28.4.0')
+implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
+
+### Overcome single dex file limits
+implementation("androidx.multidex:multidex:$multidex_version")
+
+
+# Testing
+
+This app has fully implemented androidTest and test pacakages
+To run, right click on the `test` or `androidTest` packages and select Run Tests
+
+
+## List of available Tests
+
+### androidTest
+
+#### 1. Data Tests
+- FakeAndroidTestRespository (for mocking the local repository / datasource)
+
+- RemidnersDAOTest
+  - insertReminderAndGetById
+
+- RemindersLocalRepository Test
+  - saveReminderDto_retrievesReminderDto
+  - insertThreeRemindersAndGetAllReminders
+  - insertThreeRemindersAndDeleteAllReminders
+
+#### 2. UI Tests
+- RemindersListFragmentTest
+  - clickAddReminderFab_navigateToSaveReminderFragment
+  - savedReminder_checkReminderTextIsDisplayedInUi
+  - emptyReminderList_showNoDataMessage
+
+- RemindersActivityTest (end to end test)
+  - startActivity_checkAddReminderFlow
+
+        
+### test
+- FakeTestRespository (for mocking the local repository / datasource)
+
+- ReminderListViewModelTest
+  - loadReminders_showLoading
+  - loadRemindersWhenRemindersAreUnavailable_showSnackBar
+  - loadRemindersWithNoReminders_showNoData
+  - loadRemindersWithReminders_showNoData
+
+- SaveReminderViewModelTest
+  - saveReminder_showLoading
+  - createReminderWithNullTitle_validateAndSaveReminder
+  - createReminderWithNullLocation_validateAndSaveReminder
+  - saveReminder_showToast
+  - saveReminder_navigateBack()
+  - createReminder_checkViewModelLiveDataValues
+
+
+## Built Using
+
+* [Android Studio](https://developer.android.com/studio) - Default IDE used to build android apps
+* [Kotlin](https://kotlinlang.org/) - Default language used to build this project
+
+
+## Deployment information
+
+- <strong>Deployment Target (android API / Version):</strong> 30 / Android 11 (R)
+
+## App Versions
+- January, 2022 (version 1)
+
 
 ## License
+Please review the following [license agreement](https://bumptech.github.io/glide/dev/open-source-licenses.html)
