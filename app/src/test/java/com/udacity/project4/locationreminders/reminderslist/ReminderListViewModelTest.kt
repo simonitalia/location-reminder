@@ -18,14 +18,14 @@ import org.koin.core.context.stopKoin
 import org.robolectric.annotation.Config
 
 /**
- * Testing for ReminderListViewModel and its live data objects
+ * Testing for ReminderListViewModel functions and live data objects
  */
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 @Config(sdk = [29]) // force use API 29 since API 30 not supported
 class ReminderListViewModelTest {
-    @ExperimentalCoroutinesApi
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -35,7 +35,6 @@ class ReminderListViewModelTest {
     // Subject under test (sut)
     private lateinit var viewModel: ReminderListViewModel
 
-    @ExperimentalCoroutinesApi
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
