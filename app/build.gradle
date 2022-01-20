@@ -5,6 +5,13 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
+// for accessing secrets
+def getApiKey(){
+    def Properties props = new Properties()
+    props.load(new FileInputStream(new File('secrets.properties')))
+    return props['GOOGLE_MAPS_API_KEY']
+}
+
  android {
     compileSdkVersion rootProject.compileSdkVersion
 
@@ -16,6 +23,7 @@ apply plugin: 'com.google.gms.google-services'
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        manifestPlaceholders = [ GOOGLE_MAPS_API_KEY:getApiKey()]
     }
 
     buildTypes {
@@ -27,6 +35,7 @@ apply plugin: 'com.google.gms.google-services'
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     testOptions.unitTests {
         includeAndroidResources = true
         returnDefaultValues = true
