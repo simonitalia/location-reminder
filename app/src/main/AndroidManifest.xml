@@ -31,11 +31,13 @@
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
-             Replace "${GOOGLE_MAPS_API_KEY}" with "@string/google_maps_key" for udacity submissions
+             1. Replace "${GOOGLE_MAPS_API_KEY}" with "@string/google_maps_key".
+             This references the key in file: res > values > google_maps_api.xml
+             2. Add API key to file google_maps_api.xml
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${GOOGLE_MAPS_API_KEY}" />
+            android:value="@string/google_maps_key" />
 
         <activity android:name=".authentication.AuthenticationActivity">
         </activity>

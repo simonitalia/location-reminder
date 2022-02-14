@@ -1,4 +1,4 @@
 <resources>
-    <!-- Google Maps API key: Replace API_KEY_HERE with actual key for udacity submissions-->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">API_KEY_HERE</string>
+    <!-- Google Maps API key: Replace API_KEY_HERE with actual key-->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDRhbtyVp743wvdRy467WEirv2XpJJBeqA</string>
 </resources>
