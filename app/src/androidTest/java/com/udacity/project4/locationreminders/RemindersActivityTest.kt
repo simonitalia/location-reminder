@@ -6,10 +6,8 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -38,6 +36,9 @@ import org.koin.test.get
 
 /**
  * END TO END test to black box test the app
+ * TESTING NOTES:
+    * For best results, please perform test on an actual device, not on the simulator
+    * Please ensure to be logged into app before executing this test
  */
 
 @RunWith(AndroidJUnit4::class)
