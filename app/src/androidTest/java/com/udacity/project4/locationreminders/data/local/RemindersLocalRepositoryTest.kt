@@ -35,9 +35,8 @@ class RemindersLocalRepositoryTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-
     @Before
-    fun setup() {
+    fun init() {
         // Using an in-memory database for testing, because it doesn't survive killing the process.
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
@@ -60,17 +59,17 @@ class RemindersLocalRepositoryTest {
 
     @Test
     fun saveReminderDto_retrievesReminderDto() = runBlocking {
+
         // GIVEN - A new reminderDto saved in the database.
         val newReminderDto = RemindersAndroidTestUtil.createMockReminderDto()
 
         repository.saveReminder(newReminderDto)
 
-        // WHEN  - reminderDto retrieved by ID
-        val result = repository.getReminder(newReminderDto.id)
+        // WHEN - reminderDto retrieved by ID
+        val result = repository.getReminder(newReminderDto.id) as Result.Success
 
         // THEN - Same reminderDto is returned.
         Assert.assertThat(result.succeeded, CoreMatchers.`is`(true))
-        result as Result.Success
         Assert.assertThat(result.data.title, CoreMatchers.`is`("Test Title"))
         Assert.assertThat(result.data.description, CoreMatchers.`is`("Test Description"))
         Assert.assertThat(result.data.location, CoreMatchers.`is`("Test Location"))
@@ -78,12 +77,10 @@ class RemindersLocalRepositoryTest {
         Assert.assertThat(result.data.longitude, CoreMatchers.`is`(-122.084270))
     }
 
-
     @Test
-    fun insertThreeRemindersAndGetAllReminders() = runBlockingTest {
+    fun insertThreeRemindersAndGetAllReminders() = runBlocking {
 
-        // GIVEN
-        // Create and insert 3 mock reminderDTOs in the db.
+        // GIVEN - Create and insert 3 mock reminderDTOs in the db.
         for (mock in 1..3) {
             RemindersAndroidTestUtil.createMockReminderDto().apply {
                 database.remindersDao().saveReminder(this)
@@ -91,30 +88,42 @@ class RemindersLocalRepositoryTest {
         }
 
         // WHEN - Get all reminderDTOs from the database.
-        val allReminders = database.remindersDao().getReminders()
+        val allReminders = repository.getReminders() as Result.Success
 
         // THEN - Check all loaded reminders are in the db and fetched from the db
-        MatcherAssert.assertThat(allReminders.size, `is`(3))
+        MatcherAssert.assertThat(allReminders.data.size, `is`(3))
     }
 
     @Test
-    fun insertThreeRemindersAndDeleteAllReminders() = runBlockingTest {
+    fun insertThreeRemindersAndDeleteAllReminders() = runBlocking {
 
-        // GIVEN
-        // Create and insert 3 mock reminderDTOs in the db.
+        // GIVEN - Create and insert 3 mock reminderDTOs in the db.
         for (mock in 1..3) {
             RemindersAndroidTestUtil.createMockReminderDto().apply {
                 database.remindersDao().saveReminder(this)
             }
         }
 
-        // Delete all reminderDTOs from the database.
+        // WHEN - No reminders are in the database, get all reminders
         database.remindersDao().deleteAllReminders()
-
-        // WHEN - Get no reminders are in the db
-        val result = database.remindersDao().getReminders()
+        val result = repository.getReminders() as Result.Success
 
         // THEN - Check the database has no reminders
-        MatcherAssert.assertThat(result.size, `is`(0))
+        MatcherAssert.assertThat(result.data.size, `is`(0))
+    }
+
+    @Test
+    fun getReminderByIdWhenReminderDoesNotExist() = runBlocking {
+
+        // GIVEN - A new reminderDto saved in the database
+        val newReminderDto = RemindersAndroidTestUtil.createMockReminderDto()
+        val reminderId = newReminderDto.id
+
+        // WHEN - Reminder no longer exists, attempt to retrieve it
+        database.remindersDao().deleteAllReminders()
+        val result = repository.getReminder(reminderId) as Result.Error
+
+        // THEN - Check the
+        MatcherAssert.assertThat(result.message, `is`("Reminder not found!"))
     }
 }
