@@ -87,7 +87,7 @@ class ReminderListFragmentTest {
         //WHEN - On Reminder List Screen
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
-        //Then - Verify No Data message is displayed
+        //THEN - Verify No Data message is displayed
         onView(withId(R.id.noDataTextView))
             .check(matches(isDisplayed()))
     }
