@@ -34,7 +34,6 @@ import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
-import kotlinx.android.synthetic.main.fragment_save_reminder.*
 import org.koin.android.ext.android.inject
 import java.io.IOException
 
@@ -68,7 +67,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
@@ -95,6 +94,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // enable map location search
         searchLocation(binding.mapLocationSearchView)
+
+        // observer to show toast with message
+        _viewModel.showToast.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                Toast.makeText(
+                    this.context,
+                    message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
@@ -125,21 +135,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 addressText += "\n" + place.address.toString()
 
                 placeMarkerOnMap(place.latLng)
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        // Check if location permissions are granted and if so enable the
-        // location data layer.
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.size > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                enableMyLocation()
             }
         }
     }
@@ -272,6 +267,32 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      * Enable map location
      */
 
+    // request foreground permissions
+    private fun requestForegroundPermission() {
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    // on result of requestForegroundPermission()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray) {
+
+        /* Check if location permissions are granted
+         */
+        if (isPermissionGranted()) {
+            enableMyLocation()
+        }
+
+        // show toast
+        else {
+            _viewModel.showToast.value = getString(R.string.permission_denied_explanation)
+        }
+    }
+
     // map location permission
     private fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -280,6 +301,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun enableMyLocation() {
+
+        // if user has granted permission
         if (isPermissionGranted()) {
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
@@ -295,14 +318,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             // set zoom and move map camera position to device's current location
             moveCameraToDeviceLocation(map)
 
+        // else ask for permission
         } else {
-
-            // ask for permission
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
+            requestForegroundPermission()
         }
     }
 
