@@ -43,7 +43,7 @@ class SaveReminderFragmentTest {
         //GIVEN - On Save Reminder Screen
         launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
 
-        // WHEN - Click on Save fab
+        // WHEN - Click "Save" fab
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
 
         //THEN - Verify "Please enter title" snackbar error message is displayed
@@ -57,10 +57,19 @@ class SaveReminderFragmentTest {
         //GIVEN - On Save Reminder Screen
         launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
 
-        // WHEN - Enter Title text, Enter Description text, Dismiss keyboard, Click on Save fab
-        onView(withId(R.id.reminderTitle)).perform(typeText("Test Title"))
-        onView(withId(R.id.reminderDescription)).perform(typeText("Test Description"), closeSoftKeyboard())
-        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
+        /* WHEN -
+            * Enter Title text,
+            * Enter Description text,
+            * Dismiss Keyboard,
+            * Click "Save" fab
+         */
+        onView(withId(R.id.reminderTitle))
+            .perform(typeText("Test Title"))
+        onView(withId(R.id.reminderDescription))
+            .perform(typeText("Test Description"),
+                closeSoftKeyboard())
+        onView(withId(R.id.saveReminder))
+            .perform(ViewActions.click())
 
         //THEN - Verify "Please select location" snackbar error message is displayed
         onView(withId(com.google.android.material.R.id.snackbar_text))
