@@ -147,6 +147,7 @@ To run, right click on the `test` or `androidTest` packages and select Run Tests
   - saveReminderDto_retrievesReminderDto
   - insertThreeRemindersAndGetAllReminders
   - insertThreeRemindersAndDeleteAllReminders
+  - getReminderByIdWhenReminderDoesNotExist
 
 #### 2. UI Tests
 - RemindersListFragmentTest
@@ -154,9 +155,12 @@ To run, right click on the `test` or `androidTest` packages and select Run Tests
   - savedReminder_checkReminderTextIsDisplayedInUi
   - emptyReminderList_showNoDataMessage
 
+- SaveReminderFragmentTest
+  - noReminderTitleAndClickSaveFab_showSnackBarError
+  - noReminderLocationAndClickSaveFab_showSnackBarError
+
 - RemindersActivityTest (end to end test)
   - startActivity_checkAddReminderFlow
-
         
 ### test
 - FakeTestRespository (for mocking the local repository / datasource)
@@ -188,7 +192,6 @@ To run, right click on the `test` or `androidTest` packages and select Run Tests
 
 ## App Versions
 - January, 2022 (version 1)
-
 
 ## License
 Please review the following [license agreement](https://bumptech.github.io/glide/dev/open-source-licenses.html)
