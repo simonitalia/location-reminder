@@ -27,13 +27,24 @@
   - Roboelectric (Integration Test Framework)
   - Junit, Mockito (Unit Test Framework)
 
-
 # Setup
 
 ## Installation
-
 This project's repository can be cloned via git or downloaded as a zip file.
 
+## Google Maps API Key
+This app requires a Google Maps API key. There are 2 parts to adding a Google Maps API key to the project as follows:
+
+- Google Maps Platform:
+  - Register a free Google Maps API key by following the instructions at: https://developers.google.com/maps/documentation/android-sdk/get-api-key
+  - Copy the API key once generated
+
+- In the project Repo:
+  - Open the AndroidManifest.xml file,
+  - Replace meta-data tag > android:value "${GOOGLE_MAPS_API_KEY}" with "@string/google_maps_key"
+  - Open the file "google_maps_api.xml" in res > values,
+  - Replace the text API_KEY_HERE with the copied Google Maps API Key,
+  - Rebuild the project
 
 ## Project Dependencies
 
@@ -191,7 +202,8 @@ To run, right click on the `test` or `androidTest` packages and select Run Tests
 - <strong>Deployment Target (android API / Version):</strong> 30 / Android 11 (R)
 
 ## App Versions
-- January, 2022 (version 1)
+- January, 2022 (Major version 1.0)
+- February, 2022 (Minor version 1.1)
 
 ## License
 Please review the following [license agreement](https://bumptech.github.io/glide/dev/open-source-licenses.html)
