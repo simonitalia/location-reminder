@@ -281,6 +281,7 @@ class SaveReminderFragment : BaseFragment() {
         // if all permissions have been granted, addGeofence
         } else {
             Log.i(TAG, "All permissions now granted")
+            saveReminderAndAddGeofence()
         }
     }
 
