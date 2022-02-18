@@ -6,12 +6,6 @@
     app:startDestination="@id/reminderListFragment">
 
     <activity
-        android:id="@+id/authenticationActivity"
-        android:name="com.udacity.project4.authentication.AuthenticationActivity"
-        android:label="activity_authentication"
-        tools:layout="@layout/activity_authentication" />
-
-    <activity
         android:id="@+id/remindersActivity"
         android:name="com.udacity.project4.locationreminders.RemindersActivity"
         android:label="RemindersActivity"

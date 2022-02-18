@@ -12,7 +12,6 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
-import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentReminderListBinding
@@ -25,7 +24,6 @@ class ReminderListFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ReminderListFragment"
-        const val SIGN_IN_RESULT_CODE = 1001 // Sign in response result code
     }
 
     //use Koin to retrieve the ViewModel instance
@@ -74,7 +72,7 @@ class ReminderListFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        if (requestCode == SIGN_IN_RESULT_CODE) {
+        if (requestCode == ReminderListViewModel.SIGN_IN_RESULT_CODE) {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode != Activity.RESULT_OK) {
@@ -162,7 +160,7 @@ class ReminderListFragment : BaseFragment() {
                 .setAuthMethodPickerLayout(customLayout)
                 .setAvailableProviders(providers)
                 .build(),
-            AuthenticationActivity.SIGN_IN_RESULT_CODE
+            ReminderListViewModel.SIGN_IN_RESULT_CODE
         )
     }
 

@@ -16,6 +16,10 @@ class ReminderListViewModel(
     private val repository: RemindersRepositoryInterface
 ) : BaseViewModel(app) {
 
+    companion object {
+        const val SIGN_IN_RESULT_CODE = 1001 // Sign in response result code
+    }
+
     /**
      * FirebaseUI Authentication
      */
